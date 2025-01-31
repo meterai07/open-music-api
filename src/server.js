@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
 const albumRoutes = require('./api/albums/routes');
+const songRoutes = require('./api/songs/routes');
 
 const init = async () => {
   const server = Hapi.server({
@@ -14,15 +15,27 @@ const init = async () => {
     },
   });
 
-  // server.route(routes);
-  server.route([...albumRoutes]);
+  server.route([...albumRoutes, ...songRoutes]);
+
+  // server.ext('onPreResponse', (request, h) => {
+  //   const { response } = request;
+  //   if (response.isBoom) {
+  //     const statusCode = response.output.statusCode;
+  //     return h.response({
+  //       status: statusCode === 404 ? 'fail' : 'error',
+  //       message: response.message,
+  //     }).code(statusCode);
+  //   }
+  //   return h.continue;
+  // });
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
     if (response.isBoom) {
       const statusCode = response.output.statusCode;
+      const status = [400, 404].includes(statusCode) ? 'fail' : 'error';
       return h.response({
-        status: statusCode === 404 ? 'fail' : 'error',
+        status,
         message: response.message,
       }).code(statusCode);
     }

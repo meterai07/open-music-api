@@ -17,18 +17,6 @@ const init = async () => {
 
   server.route([...albumRoutes, ...songRoutes]);
 
-  // server.ext('onPreResponse', (request, h) => {
-  //   const { response } = request;
-  //   if (response.isBoom) {
-  //     const statusCode = response.output.statusCode;
-  //     return h.response({
-  //       status: statusCode === 404 ? 'fail' : 'error',
-  //       message: response.message,
-  //     }).code(statusCode);
-  //   }
-  //   return h.continue;
-  // });
-
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
     if (response.isBoom) {

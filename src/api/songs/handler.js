@@ -111,12 +111,7 @@ const deleteSongByIdHandler = async (request, h) => {
 };
 
 module.exports = {
-    postSongHandler,
-    getSongsHandler,
-    getSongByIdHandler,
-    putSongByIdHandler,
-    deleteSongByIdHandler,
-    getSongsByAlbumId: async (albumId) => {
+    postSongHandler, getSongsHandler, getSongByIdHandler, putSongByIdHandler, deleteSongByIdHandler, getSongsByAlbumId: async (albumId) => {
         return pool.query(
             'SELECT id, title, performer FROM songs WHERE album_id = $1',
             [albumId]

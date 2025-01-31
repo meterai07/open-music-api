@@ -46,11 +46,13 @@ exports.up = (pgm) => {
     },
     duration: {
       type: "integer",
+      notNull: false,
     },
     album_id: {
       type: "varchar(50)",
       references: "albums(id)",
       onDelete: "SET NULL",
+      allowNull: true,
     },
   });
 };

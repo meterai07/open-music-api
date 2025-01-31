@@ -1,10 +1,5 @@
-import {
-    postAlbumHandler
-} from './handler';
-
-import {
-    postAlbumSchema
-} from './schema';
+const { postAlbumHandler, getAlbumByIdHandler, putAlbumByIdHandler, deleteAlbumByIdHandler } = require('./handler');
+const { albumPayloadSchema, albumIdSchema } = require('./schema');
 
 const albumRoutes = [
     {
@@ -17,4 +12,37 @@ const albumRoutes = [
             },
         },
     },
+    {
+        method: 'GET',
+        path: '/albums/{id}',
+        handler: getAlbumByIdHandler,
+        options: {
+            validate: {
+                params: albumIdSchema,
+            },
+        },
+    },
+    {
+        method: 'PUT',
+        path: '/albums/{id}',
+        handler: putAlbumByIdHandler,
+        options: {
+            validate: {
+                params: albumIdSchema,
+                payload: albumPayloadSchema
+            }
+        }
+    },
+    {
+        method: 'DELETE',
+        path: '/albums/{id}',
+        handler: deleteAlbumByIdHandler,
+        options: {
+            validate: {
+                params: albumIdSchema
+            }
+        }
+    }
 ]
+
+module.exports = albumRoutes;

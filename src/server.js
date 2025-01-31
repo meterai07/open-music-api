@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
-const routes = require('./routes');
+const albumRoutes = require('./api/albums/routes');
 
 const init = async () => {
   const server = Hapi.server({
@@ -14,7 +14,20 @@ const init = async () => {
     },
   });
 
-  server.route(routes);
+  // server.route(routes);
+  server.route([...albumRoutes]);
+
+  server.ext('onPreResponse', (request, h) => {
+    const { response } = request;
+    if (response.isBoom) {
+      const statusCode = response.output.statusCode;
+      return h.response({
+        status: statusCode === 404 ? 'fail' : 'error',
+        message: response.message,
+      }).code(statusCode);
+    }
+    return h.continue;
+  });
 
   await server.start();
   console.log(`Server berjalan pada ${server.info.uri}`);

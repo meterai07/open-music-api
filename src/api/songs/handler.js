@@ -1,5 +1,5 @@
 const pool = require('../../database/postgres');
-const { successResponse, errorResponse } = require('../../utils/response');
+const { successResponse, errorResponse, putDeleteResponse } = require('../../utils/response');
 
 const postSongHandler = async (request, h) => {
     try {
@@ -86,7 +86,7 @@ const putSongByIdHandler = async (request, h) => {
             return errorResponse(h, 'Gagal memperbarui lagu. Id tidak ditemukan', 404);
         }
 
-        return successResponse(h, { message: 'Lagu berhasil diperbarui' });
+        return putDeleteResponse(h, 'Lagu berhasil diperbarui', 200);
     } catch (error) {
         if (error.code === '23503') {
             return errorResponse(h, 'Album tidak ditemukan', 400);
@@ -104,7 +104,7 @@ const deleteSongByIdHandler = async (request, h) => {
             return errorResponse(h, 'Lagu gagal dihapus. Id tidak ditemukan', 404);
         }
 
-        return successResponse(h, { message: 'Lagu berhasil dihapus' });
+        return putDeleteResponse(h, 'Lagu berhasil dihapus', 200);
     } catch (error) {
         return errorResponse(h, error.message, 500);
     }

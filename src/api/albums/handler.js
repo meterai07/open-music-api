@@ -1,5 +1,5 @@
 const pool = require('../../database/postgres');
-const { successResponse, errorResponse } = require('../../utils/response');
+const { successResponse, errorResponse, putDeleteResponse } = require('../../utils/response');
 
 const postAlbumHandler = async (request, h) => {
     try {
@@ -20,13 +20,20 @@ const postAlbumHandler = async (request, h) => {
 const getAlbumByIdHandler = async (request, h) => {
     try {
         const { id } = request.params;
-        const result = await pool.query('SELECT * FROM albums WHERE id = $1', [id]);
+        const albumResult = await pool.query('SELECT * FROM albums WHERE id = $1', [id]);
 
-        if (!result.rows.length) {
+        if (!albumResult.rows.length) {
             return errorResponse(h, 'Album not found', 404);
         }
 
-        return successResponse(h, { album: result.rows[0] });
+        const songsResult = await pool.query('SELECT * FROM songs WHERE album_id = $1', [id]);
+
+        return successResponse(h, { 
+            album: {
+                ...albumResult.rows[0],
+                songs: songsResult.rows
+            }
+        });
     } catch (error) {
         return errorResponse(h, error.message, 500);
     }
@@ -46,7 +53,7 @@ const putAlbumByIdHandler = async (request, h) => {
             return errorResponse(h, 'Gagal memperbarui album. Id tidak ditemukan', 404);
         }
 
-        return successResponse(h, { message: 'Album berhasil diperbarui' });
+        return putDeleteResponse(h, 'Album berhasil diperbarui', 200);
     } catch (error) {
         return errorResponse(h, error.message, 500);
     }
@@ -61,7 +68,7 @@ const deleteAlbumByIdHandler = async (request, h) => {
             return errorResponse(h, 'Album gagal dihapus. Id tidak ditemukan', 404);
         }
 
-        return successResponse(h, { message: 'Album berhasil dihapus' });
+        return putDeleteResponse(h, 'Album berhasil dihapus', 200);
     } catch (error) {
         return errorResponse(h, error.message, 500);
     }

@@ -4,6 +4,12 @@ const successResponse = (h, data, code = 200) =>
         data
     }).code(code);
 
+const putDeleteResponse = (h, message, code) =>
+    h.response({
+        status: 'success',
+        message
+    }).code(code);
+
 const errorResponse = (h, message, code) =>
     h.response({
         status: code >= 500 ? 'error' : 'fail',
@@ -12,5 +18,6 @@ const errorResponse = (h, message, code) =>
 
 module.exports = {
     successResponse,
-    errorResponse
+    errorResponse,
+    putDeleteResponse
 };

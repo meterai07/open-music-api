@@ -1,7 +1,13 @@
+const { postPlaylistHandler } = require("./handler");
+
 const playlistRoutes = [
     {
         method: 'POST',
-        path: '/playlists'
+        path: '/playlists',
+        handler: postPlaylistHandler,
+        options: {
+            auth: 'openmusic_jwt',
+        }
     },
     {
         method: 'GET',

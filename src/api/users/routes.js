@@ -1,4 +1,4 @@
-const { postUserHandler } = require('./handlers');
+const { postUserHandler } = require('./handler');
 const { userPayloadSchema } = require('./schema');
 
 const userRoutes = [
@@ -9,9 +9,10 @@ const userRoutes = [
         options: {
             validate: {
                 payload: userPayloadSchema
-            }
-        }
+            },
+            auth: false
+        },
     }
 ]
 
-export default userRoutes;
+module.exports = userRoutes;

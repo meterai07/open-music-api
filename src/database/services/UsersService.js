@@ -16,5 +16,25 @@ const addUser = async (user) => {
     return result.rows[0].id;
 };
 
+const verifyUserCredential = async (user) => {
+    const { username, password } = user;    
+    const query = {
+        text: 'SELECT id, password FROM users WHERE username = $1',
+        values: [username],
+    };
+    const result = await pool.query(query);
+    if (!result.rows.length) {
+        return null;
+    }
 
-module.exports = { addUser };
+    const { id, password: hashedPassword } = result.rows[0];
+    const match = await bcrypt.compare(password, hashedPassword);
+
+    if (!match) {
+        return null;
+    }
+
+    return id;
+};
+
+module.exports = { addUser, verifyUserCredential };

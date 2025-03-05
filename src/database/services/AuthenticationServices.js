@@ -1,23 +1,25 @@
 const pool = require('../postgres');
 
-const addRefreshToken = async (token) => {
+const addRefreshToken = async (payload) => {
+    const { token, user_id } = payload;
+
+    const id = `${user_id}.${Date.now()}`;
+
     const query = {
-        text: 'INSERT INTO authentications(token) VALUES($1)',
-        values: [token],
+        text: 'INSERT INTO authentications(id, token, user_id) VALUES($1, $2, $3)',
+        values: [id, token, user_id],
     };
     await pool.query(query);
 };
 
 const verifyRefreshToken = async (token) => {
     const query = {
-        text: 'SELECT token FROM authentications WHERE token = $1',
+        text: 'SELECT * FROM authentications WHERE token = $1',
         values: [token],
     };
     const result = await pool.query(query);
 
-    if (!result.rows.length) {
-        throw new Error('Refresh token tidak valid');
-    }
+    return result.rows;
 };
 
 const deleteRefreshToken = async (token) => {
@@ -25,11 +27,30 @@ const deleteRefreshToken = async (token) => {
         text: 'DELETE FROM authentications WHERE token = $1',
         values: [token],
     };
-    await pool.query(query);
+    const result = await pool.query(query);
+    
+    if (!result.rowCount) {
+        return null;
+    }
+
+    return result;
 };
+
+const verifyUserRefreshToken = async (payload) => {
+    const { user_id } = payload;
+
+    const query = {
+        text: 'SELECT * FROM authentications WHERE user_id = $1',
+        values: [user_id],
+    };
+    const result = await pool.query(query);
+    
+    return result.rows;
+}
 
 module.exports = {
     addRefreshToken,
     verifyRefreshToken,
     deleteRefreshToken,
+    verifyUserRefreshToken,
 };

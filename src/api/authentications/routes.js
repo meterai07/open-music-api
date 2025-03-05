@@ -1,5 +1,5 @@
 const { options } = require("joi");
-const { authenticationPayloadSchema } = require("./schema");
+const { authenticationPayloadSchema, authenticationRefreshPayloadSchema } = require("./schema");
 const { authenticationPostHandler, authenticationPutHandler, authenticationDeleteHandler } = require("./handler");
 
 const authenticationRoutes = [
@@ -10,7 +10,8 @@ const authenticationRoutes = [
         options: {
             validate: {
                 payload: authenticationPayloadSchema
-            }
+            },
+            auth: false
         }
     },
     {
@@ -19,8 +20,9 @@ const authenticationRoutes = [
         handler: authenticationPutHandler,
         options: {
             validate: {
-                payload: authenticationPayloadSchema
-            }
+                payload: authenticationRefreshPayloadSchema,
+            }, 
+            auth: false
         }
     },
     {
@@ -29,8 +31,9 @@ const authenticationRoutes = [
         handler: authenticationDeleteHandler,
         options: {
             validate: {
-                payload: authenticationPayloadSchema
-            }
+                payload: authenticationRefreshPayloadSchema
+            },
+            auth: false
         }
     }
 ];

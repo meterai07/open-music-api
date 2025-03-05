@@ -8,7 +8,7 @@ const postUserHandler = async (request, h) => {
         const id = await addUser({ username, password, fullname });
         return successResponse(h, { userId: id }, 201);
     } catch (error) {
-        return errorResponse(h, error.message, 500);
+        return errorResponse(h, error.message, 400);
     }
 };
 

@@ -12,7 +12,7 @@ const addRefreshToken = async (payload) => {
     await pool.query(query);
 };
 
-const verifyRefreshToken = async (token) => {
+const getRefreshTokenByToken = async (token) => {
     const query = {
         text: 'SELECT * FROM authentications WHERE token = $1',
         values: [token],
@@ -21,6 +21,18 @@ const verifyRefreshToken = async (token) => {
 
     return result.rows;
 };
+
+const updateRefreshToken = async (payload) => {
+    const { token, user_id } = payload;
+
+    const query = {
+        text: 'UPDATE authentications SET token = $1 WHERE user_id = $2 RETURNING token',
+        values: [token, user_id],
+    };
+    const result = await pool.query(query);
+
+    return result.rows;
+}
 
 const deleteRefreshToken = async (token) => {
     const query = {
@@ -36,7 +48,7 @@ const deleteRefreshToken = async (token) => {
     return result;
 };
 
-const verifyUserRefreshToken = async (payload) => {
+const getUserRefreshTokenByUserId = async (payload) => {
     const { user_id } = payload;
 
     const query = {
@@ -50,7 +62,7 @@ const verifyUserRefreshToken = async (payload) => {
 
 module.exports = {
     addRefreshToken,
-    verifyRefreshToken,
+    getRefreshTokenByToken,
     deleteRefreshToken,
-    verifyUserRefreshToken,
+    getUserRefreshTokenByUserId,
 };

@@ -16,6 +16,17 @@ const addUser = async (user) => {
     return result.rows[0].id;
 };
 
+const getUserById = async (id) => {
+    const query = {
+        text: 'SELECT id, username, fullname FROM users WHERE id = $1',
+        values: [id],
+    };
+
+    const result = await pool.query(query);
+
+    return result.rows[0];
+}
+
 const verifyUserCredential = async (user) => {
     const { username, password } = user;    
     const query = {
@@ -37,4 +48,4 @@ const verifyUserCredential = async (user) => {
     return id;
 };
 
-module.exports = { addUser, verifyUserCredential };
+module.exports = { addUser, verifyUserCredential, getUserById };

@@ -1,7 +1,7 @@
 const { verifyUserCredential } = require('../../database/services/UsersService');
-const { errorResponse, successResponse } = require('../../utils/response');
-const { addRefreshToken, verifyRefreshToken, deleteRefreshToken, verifyUserRefreshToken  } = require('../../database/services/AuthenticationServices');
-const { generateAccessToken, generateRefreshToken } = require('../../utils/jwt');
+const { errorResponse, successResponse, putDeleteResponse } = require('../../utils/response');
+const { addRefreshToken, getRefreshTokenByToken, deleteRefreshToken, getUserRefreshTokenByUserId } = require('../../database/services/AuthenticationServices');
+const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../../utils/jwt');
 
 const authenticationPostHandler = async (request, h) => {
     try {
@@ -13,38 +13,40 @@ const authenticationPostHandler = async (request, h) => {
         }
 
         const accessToken = generateAccessToken({ id });
-        const refreshToken = generateRefreshToken();
-        
-        const isUserAlreadyhaveAccessToken = await verifyUserRefreshToken({ user_id: id });
-        
-        if (isUserAlreadyhaveAccessToken.length > 0) {
-            await deleteRefreshToken(isUserAlreadyhaveAccessToken[0].token);
-            await addRefreshToken({ token: refreshToken, user_id: id });
-        } else {
-            await addRefreshToken({ token: refreshToken, user_id: id });
+        const refreshToken = generateRefreshToken({ id });
+
+        const isUserAlreadyHaveAccessToken = await getUserRefreshTokenByUserId({ user_id: id });
+
+        if (isUserAlreadyHaveAccessToken.length > 0) {
+            await deleteRefreshToken(isUserAlreadyHaveAccessToken[0].token);
         }
+        
+        await addRefreshToken({ token: refreshToken, user_id: id });
 
         return successResponse(h, { accessToken, refreshToken }, 201);
     } catch (error) {
-        return errorResponse(h, error, 400);
+        return errorResponse(h, error.message, 400);
     }
 }
 
 const authenticationPutHandler = async (request, h) => {
     try {
         const { refreshToken } = request.payload;
-        const isUserHaveRefreshToken = await verifyRefreshToken(refreshToken);
+        const isUserHaveRefreshToken = await getRefreshTokenByToken(refreshToken);
 
         if (isUserHaveRefreshToken.length === 0) {
             return errorResponse(h, 'Refresh token tidak valid', 400);
         }
 
-        await deleteRefreshToken(refreshToken);
-
-        const newRefreshToken = generateRefreshToken();
-        await addRefreshToken({ token: newRefreshToken, user_id: isUserHaveRefreshToken[0].user_id });
+        const payload = verifyRefreshToken(refreshToken);
+        if (!payload) {
+            return errorResponse(h, 'Refresh token tidak valid', 400);
+        }
         
-        return successResponse(h, { refreshToken: newRefreshToken });
+        // must add check if refresh token is still valid
+
+        const newAccessToken = generateAccessToken({ id: payload.id });
+        return successResponse(h, { accessToken: newAccessToken });
     } catch (error) {
         return errorResponse(h, error, 400);
     }
@@ -54,14 +56,14 @@ const authenticationDeleteHandler = async (request, h) => {
     try {
         const { refreshToken } = request.payload;
 
-        const isUserHaveRefreshToken = await verifyRefreshToken(refreshToken);
+        const isUserHaveRefreshToken = await getRefreshTokenByToken(refreshToken);
 
         if (isUserHaveRefreshToken.length === 0) {
             return errorResponse(h, 'Refresh token tidak valid', 400);
         }
 
         await deleteRefreshToken(refreshToken);
-        return successResponse(h, { message: 'Refresh token berhasil dihapus' });
+        return putDeleteResponse(h, 'Refresh token berhasil dihapus', 200);
     } catch (error) {
         return errorResponse(h, error, 400);
     }

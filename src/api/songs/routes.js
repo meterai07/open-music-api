@@ -20,7 +20,8 @@ const songRoutes = [
         options: {
             validate: {
                 payload: songPayloadSchema
-            }
+            },
+            auth: false
         }
     },
     {
@@ -30,7 +31,8 @@ const songRoutes = [
         options: {
             validate: {
                 query: songQuerySchema
-            }
+            },
+            auth: false
         }
     },
     {
@@ -40,7 +42,8 @@ const songRoutes = [
         options: {
             validate: {
                 params: songIdSchema
-            }
+            },
+            auth: false
         }
     },
     {
@@ -51,7 +54,8 @@ const songRoutes = [
             validate: {
                 params: songIdSchema,
                 payload: songPayloadSchema
-            }
+            },
+            auth: false
         }
     },
     {
@@ -61,7 +65,8 @@ const songRoutes = [
         options: {
             validate: {
                 params: songIdSchema
-            }
+            },
+            auth: false
         }
     }
 ];

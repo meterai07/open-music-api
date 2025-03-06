@@ -15,7 +15,7 @@ const postSongHandler = async (request, h) => {
 
         return successResponse(h, { songId: id }, 201);
     } catch (error) {
-        if (error.code === '23503') { // Foreign key violation
+        if (error.code === '23503') { 
             return errorResponse(h, 'Album tidak ditemukan', 400);
         }
         return errorResponse(h, error.message, 500);

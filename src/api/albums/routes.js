@@ -10,6 +10,7 @@ const albumRoutes = [
             validate: {
                 payload: albumPayloadSchema,
             },
+            auth: false,
         },
     },
     {
@@ -20,6 +21,7 @@ const albumRoutes = [
             validate: {
                 params: albumIdSchema,
             },
+            auth: false
         },
     },
     {
@@ -30,7 +32,8 @@ const albumRoutes = [
             validate: {
                 params: albumIdSchema,
                 payload: albumPayloadSchema
-            }
+            },
+            auth: false
         }
     },
     {
@@ -40,7 +43,8 @@ const albumRoutes = [
         options: {
             validate: {
                 params: albumIdSchema
-            }
+            },
+            auth: false
         }
     }
 ]

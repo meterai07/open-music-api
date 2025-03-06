@@ -6,6 +6,7 @@ const albumRoutes = require('./api/albums/routes');
 const songRoutes = require('./api/songs/routes');
 const authenticationRoutes = require('./api/authentications/routes');
 const userRoutes = require('./api/users/routes');
+const playlistRoutes = require('./api/playlists/routes');
 
 const init = async () => {
   const server = Hapi.server({
@@ -30,26 +31,29 @@ const init = async () => {
       aud: false,
       iss: false,
       sub: false,
-      maxAgeSec: process.env.ACCESS_TOKEN_AGE || 1800,
+      nbf: true,
+      exp: true,
+      maxAgeSec: 14400,
     },
-    validate: (artifacts) => ({
-      isValid: true,
-      credentials: {
-        id: artifacts.decoded.payload.id,
-      },
-    }),
+    validate: async (artifacts) => {
+      return {
+        isValid: true,
+        credentials: {
+          id: artifacts.decoded.payload.id,
+        },
+      };
+    },
   });
 
   server.auth.default('openmusic_jwt');
 
-  server.route([...albumRoutes, ...songRoutes, ...userRoutes, ...authenticationRoutes]);
+  server.route([...albumRoutes, ...songRoutes, ...userRoutes, ...playlistRoutes, ...authenticationRoutes]);
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
     if (response.isBoom) {
       const statusCode = response.output.statusCode;
-      const status = [400, 401, 402, 403, 404].includes(statusCode) ? 'fail' : 'error';
-      // const status = statusCode >= 400 && statusCode <= 499 ? 'fail' : 'error';
+      const status = [400, 402, 403, 404].includes(statusCode) ? 'fail' : 'error';
       return h.response({
         status,
         message: response.message,

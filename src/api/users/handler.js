@@ -1,4 +1,6 @@
-const { addUser, getUserById } = require('../../database/services/UsersService');
+const { addUser, getUserById } = require('../../database/services/UserServices');
+const messages = require('../../utils/const/message');
+const status_code = require('../../utils/const/status_code');
 const { successResponse, errorResponse } = require('../../utils/response');
 
 const postUserHandler = async (request, h) => {
@@ -6,9 +8,9 @@ const postUserHandler = async (request, h) => {
         const { username, password, fullname } = request.payload;
 
         const id = await addUser({ username, password, fullname });
-        return successResponse(h, { userId: id }, 201);
+        return successResponse(h, { userId: id }, status_code.CREATED);
     } catch (error) {
-        return errorResponse(h, error.message, 400);
+        return errorResponse(h, error.message, status_code.BAD_REQUEST);
     }
 };
 
@@ -18,12 +20,12 @@ const getUserByIdHandler = async (request, h) => {
         const user = await getUserById(id);
 
         if (!user) {
-            return errorResponse(h, 'User not found', 404);
+            return errorResponse(h, messages.USER_NOT_FOUND, status_code.NOT_FOUND);
         }
 
         return successResponse(h, { user });
     } catch (error) {
-        return errorResponse(h, error.message, 500);
+        return errorResponse(h, error.message, status_code.ERROR);
     }
 }
 

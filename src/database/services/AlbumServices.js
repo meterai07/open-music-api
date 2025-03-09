@@ -23,7 +23,6 @@ const PutAlbumByIdService = async (id, album) => {
     return result.rows[0];
 };
 
-
 const DeleteAlbumByIdService = async (id) => {
     const result = await pool.query('DELETE FROM albums WHERE id = $1 RETURNING id', [id]);
     return result.rows[0];

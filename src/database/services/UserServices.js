@@ -24,7 +24,7 @@ const getUserById = async (id) => {
 
     const result = await pool.query(query);
 
-    return result.rows[0];
+    return result.rows[0] || null;
 }
 
 const verifyUserCredential = async (user) => {

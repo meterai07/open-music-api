@@ -1,4 +1,3 @@
-const handler = require("../songs/handler");
 const { collaborationPayloadSchema } = require("./schema");
 const { postCollaborationHandler, deleteCollaborationHandler} = require("./handler");
 
@@ -10,7 +9,8 @@ const collaborationRoutes = [
         options: {
             validate: {
                 payload: collaborationPayloadSchema
-            }
+            },
+            auth: 'openmusic_jwt'
         }
     },
     {
@@ -20,7 +20,8 @@ const collaborationRoutes = [
         options: {
             validate: {
                 payload: collaborationPayloadSchema
-            }
+            },
+            auth: 'openmusic_jwt'
         }
     }
 ];

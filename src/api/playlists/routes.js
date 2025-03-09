@@ -1,4 +1,4 @@
-const { postPlaylistHandler, getAllPlaylistsHandler, deletePlaylistByIdHandler, postSongToPlaylistHandler, getSongsFromPlaylistHandler, deleteSongFromPlaylistHandler } = require("./handler");
+const { postPlaylistHandler, getAllPlaylistsHandler, deletePlaylistByIdHandler, postSongToPlaylistHandler, getSongsFromPlaylistHandler, deleteSongFromPlaylistHandler, getPlaylistActivitiesHandler } = require("./handler");
 const { playlistPayloadSchema, songsPlaylistPayloadSchema } = require("./schema");
 
 const playlistRoutes = [
@@ -56,6 +56,14 @@ const playlistRoutes = [
             validate: {
                 payload: songsPlaylistPayloadSchema
             },
+            auth: 'openmusic_jwt',
+        }
+    },
+    {
+        method: 'GET',
+        path: '/playlists/{id}/activities',
+        handler: getPlaylistActivitiesHandler,
+        options: {
             auth: 'openmusic_jwt',
         }
     }

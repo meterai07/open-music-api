@@ -32,7 +32,7 @@ const updateRefreshToken = async (payload) => {
     const result = await pool.query(query);
 
     return result.rows;
-}
+};
 
 const deleteRefreshToken = async (token) => {
     const query = {
@@ -58,7 +58,7 @@ const getUserRefreshTokenByUserId = async (payload) => {
     const result = await pool.query(query);
     
     return result.rows;
-}
+};
 
 module.exports = {
     addRefreshToken,

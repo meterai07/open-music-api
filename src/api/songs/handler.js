@@ -1,10 +1,12 @@
 const pool = require('../../database/postgres');
+const messages = require('../../utils/const/message');
+const status_code = require('../../utils/const/status_code');
 const { successResponse, errorResponse, putDeleteResponse } = require('../../utils/response');
 
 const postSongHandler = async (request, h) => {
     try {
         const { title, year, genre, performer, duration, albumId } = request.payload;
-        const id = `song-${Math.random().toString(36).substr(2, 16)}`;
+        const id = `song-${Math.random().toString(36).substring(2, 16)}`;
 
         await pool.query(
             `INSERT INTO songs 
@@ -13,12 +15,12 @@ const postSongHandler = async (request, h) => {
             [id, title, year, genre, performer, duration, albumId]
         );
 
-        return successResponse(h, { songId: id }, 201);
+        return successResponse(h, { songId: id }, status_code.CREATED);
     } catch (error) {
         if (error.code === '23503') { 
-            return errorResponse(h, 'Album tidak ditemukan', 400);
+            return errorResponse(h, messages.ALBUM_NOT_FOUND, status_code.NOT_FOUND);
         }
-        return errorResponse(h, error.message, 500);
+        return errorResponse(h, error.message, status_code.ERROR);
     }
 };
 
@@ -46,7 +48,7 @@ const getSongsHandler = async (request, h) => {
         const result = await pool.query(query, values);
         return successResponse(h, { songs: result.rows });
     } catch (error) {
-        return errorResponse(h, error.message, 500);
+        return errorResponse(h, error.message, status_code.ERROR);
     }
 };
 
@@ -60,12 +62,12 @@ const getSongByIdHandler = async (request, h) => {
         );
 
         if (!result.rows.length) {
-            return errorResponse(h, 'Lagu tidak ditemukan', 404);
+            return errorResponse(h, messages.SONG_NOT_FOUND, status_code.NOT_FOUND);
         }
 
         return successResponse(h, { song: result.rows[0] });
     } catch (error) {
-        return errorResponse(h, error.message, 500);
+        return errorResponse(h, error.message, status_code.ERROR);
     }
 };
 
@@ -83,15 +85,15 @@ const putSongByIdHandler = async (request, h) => {
         );
 
         if (!result.rows.length) {
-            return errorResponse(h, 'Gagal memperbarui lagu. Id tidak ditemukan', 404);
+            return errorResponse(h, messages.SONG_FAILED_TO_UPDATE, status_code.NOT_FOUND);
         }
 
-        return putDeleteResponse(h, 'Lagu berhasil diperbarui', 200);
+        return putDeleteResponse(h, messages.SONG_UPDATED, status_code.SUCCESS);
     } catch (error) {
         if (error.code === '23503') {
-            return errorResponse(h, 'Album tidak ditemukan', 400);
+            return errorResponse(h, messages.ALBUM_NOT_FOUND, status_code.NOT_FOUND);
         }
-        return errorResponse(h, error.message, 500);
+        return errorResponse(h, error.message, status_code.ERROR);
     }
 };
 
@@ -101,12 +103,12 @@ const deleteSongByIdHandler = async (request, h) => {
         const result = await pool.query('DELETE FROM songs WHERE id = $1 RETURNING id', [id]);
 
         if (!result.rows.length) {
-            return errorResponse(h, 'Lagu gagal dihapus. Id tidak ditemukan', 404);
+            return errorResponse(h, messages.SONG_FAILED_TO_UPDATE, status_code.NOT_FOUND);
         }
 
-        return putDeleteResponse(h, 'Lagu berhasil dihapus', 200);
+        return putDeleteResponse(h, messages.SONG_DELETED, status_code.SUCCESS);
     } catch (error) {
-        return errorResponse(h, error.message, 500);
+        return errorResponse(h, error.message, status_code.ERROR);
     }
 };
 

@@ -1,5 +1,5 @@
-const { collaborationPayloadSchema } = require("./schema");
 const { postCollaborationHandler, deleteCollaborationHandler} = require("./handler");
+const { collaborationPayloadSchema } = require("./schema");
 
 const collaborationRoutes = [
     {

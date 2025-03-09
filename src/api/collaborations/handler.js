@@ -1,9 +1,9 @@
 const { addCollaboration, deleteCollaboration } = require('../../database/services//CollaborationServices');
-const { getPlaylists, getPlaylistDetails } = require('../../database/services/PlaylistServices');
+const { getPlaylistDetails } = require('../../database/services/PlaylistServices');
 const { getUserById } = require('../../database/services/UserServices');
+const { successResponse, errorResponse, putDeleteResponse } = require('../../utils/response');
 const messages = require('../../utils/const/message');
 const status_code = require('../../utils/const/status_code');
-const { successResponse, errorResponse, putDeleteResponse } = require('../../utils/response');
 
 const postCollaborationHandler = async (request, h) => {
     try {       

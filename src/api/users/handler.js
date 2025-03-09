@@ -1,7 +1,7 @@
 const { addUser, getUserById } = require('../../database/services/UserServices');
+const { successResponse, errorResponse } = require('../../utils/response');
 const messages = require('../../utils/const/message');
 const status_code = require('../../utils/const/status_code');
-const { successResponse, errorResponse } = require('../../utils/response');
 
 const postUserHandler = async (request, h) => {
     try {

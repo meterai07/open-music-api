@@ -33,15 +33,34 @@ const getPlaylists = async (owner) => {
 
 const getPlaylistDetails = async (playlistId) => {
     const query = {
-        text: `SELECT playlists.id, playlists.name, playlists.owner, users.username FROM playlists
-        JOIN users ON playlists.owner = users.id
-        WHERE playlists.id = $1`,
+        text: `SELECT p.id, p.name, p.owner, u.username, 
+            ARRAY_AGG(c.collaborator_id) AS collaborators
+            FROM playlists p
+            JOIN users u ON p.owner = u.id
+            LEFT JOIN collaborations c ON p.id = c.playlist_id
+            WHERE p.id = $1
+            GROUP BY p.id, p.name, p.owner, u.username;
+            `,
         values: [playlistId]
     };
 
     const result = await pool.query(query);
     return result.rows[0];
 };
+
+const getPlaylistById = async (playlistId) => {
+    const query = {
+        text: `SELECT p.id, p.name, p.owner, u.username
+               FROM playlists p
+               JOIN users u ON p.owner = u.id
+               WHERE p.id = $1`,
+        values: [playlistId]
+    };
+
+    const result = await pool.query(query);
+    return result.rows[0];
+};
+
 
 const deletePlaylistById = async (id, userId) => {
     const query = {
@@ -88,4 +107,4 @@ const deleteSongFromPlaylist = async (playlistId, songId) => {
     return result;
 };
 
-module.exports = { addPlaylist, getPlaylists, deletePlaylistById, addSongToPlaylist, getSongsFromPlaylist, deleteSongFromPlaylist, getPlaylistDetails };
+module.exports = { addPlaylist, getPlaylists, deletePlaylistById, addSongToPlaylist, getSongsFromPlaylist, deleteSongFromPlaylist, getPlaylistDetails, getPlaylistById };

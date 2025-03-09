@@ -2,7 +2,7 @@ const pool = require('../postgres');
 
 const getPlaylistActivities = async (playlistId) => {
     const query = {
-        text: `SELECT users.username, songs.title, activities.action, activities.time FROM activities
+        text: `SELECT activities.user_id, users.username, songs.title, activities.action, activities.time FROM activities
         JOIN users ON activities.user_id = users.id
         JOIN songs ON activities.song_id = songs.id
         WHERE activities.playlist_id = $1

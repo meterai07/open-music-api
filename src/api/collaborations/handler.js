@@ -35,15 +35,19 @@ const deleteCollaborationHandler = async (request, h) => {
     try {
         const { playlistId, userId } = request.payload;
         const ownerId = request.auth.credentials.id;
-        
-        const playlists = await getPlaylists(ownerId);
-        const playlist = playlists.find(playlist => playlist.id === playlistId);
+
+        const playlist = await getPlaylistDetails(playlistId);
         if (!playlist) {
-            return errorResponse(h, messages.NO_ACCESS, status_code.FORBIDDEN);
+            return errorResponse(h, messages.PLAYLIST_NOT_FOUND, status_code.NOT_FOUND);
         }
 
-        const result = await deleteCollaboration(playlistId, ownerId, userId);
-        if (!result.rowCount === 0) {
+        if (playlist.owner !== ownerId) {
+            return errorResponse(h, messages.NO_ACCESS, status_code.FORBIDDEN);  
+        }
+
+        const result = await deleteCollaboration(playlistId, userId);
+
+        if (result.rowCount === 0) {
             return errorResponse(h, messages.COLLABORATION_NOT_FOUND, status_code.NOT_FOUND);
         }
 

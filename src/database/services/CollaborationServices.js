@@ -13,10 +13,10 @@ const addCollaboration = async (playlistId, owner_id, collaborator_id) => {
     return result.rows[0].id;
 };
 
-const deleteCollaboration = async (playlistId, owner_id, collaborator_id) => {
+const deleteCollaboration = async (playlistId, collaboratorId) => {
     const query = {
-        text: 'DELETE FROM collaborations WHERE playlist_id = $1 AND user_id = $2 AND collaborator_id = $3',
-        values: [playlistId, owner_id, collaborator_id]
+        text: 'DELETE FROM collaborations WHERE playlist_id = $1 AND collaborator_id = $2',
+        values: [playlistId, collaboratorId] 
     };
 
     const result = await pool.query(query);

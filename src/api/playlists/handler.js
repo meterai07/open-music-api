@@ -1,5 +1,5 @@
 const { successResponse, errorResponse, putDeleteResponse } = require('../../utils/response');
-const { addPlaylist, getPlaylists, deletePlaylistById, addSongToPlaylist, getSongsFromPlaylist, deleteSongFromPlaylist, getPlaylistDetails } = require('../../database/services/PlaylistServices');
+const { addPlaylist, getPlaylists, deletePlaylistById, addSongToPlaylist, getSongsFromPlaylist, deleteSongFromPlaylist, getPlaylistDetails, getPlaylistById } = require('../../database/services/PlaylistServices');
 const { addPlaylistActivity, getPlaylistActivities } = require('../../database/services/ActivityServices');
 const { getUserById } = require('../../database/services/UserServices');
 const { getSongsById } = require('../../database/services/SongServices');
@@ -45,18 +45,20 @@ const getAllPlaylistsHandler = async (request, h) => {
     }
 };
 
-
 const deletePlaylistByIdHandler = async (request, h) => {
     try {
         const { id } = request.params;
         const userId = request.auth.credentials.id;
-
-        const playlists = await getPlaylists(userId);
-        const playlist = playlists.find(playlist => playlist.id === id);
+        
+        const playlist = await getPlaylistById(id);
         if (!playlist) {
+            return errorResponse(h, messages.PLAYLIST_NOT_FOUND, status_code.NOT_FOUND);
+        }
+
+        if (playlist.owner !== userId) {
             return errorResponse(h, messages.NO_ACCESS, status_code.FORBIDDEN);
         }
-        
+
         await deletePlaylistById(id, userId);
 
         return putDeleteResponse(h, messages.PLAYLIST_DELETED, status_code.SUCCESS);
@@ -98,12 +100,15 @@ const getSongsFromPlaylistHandler = async (request, h) => {
         const { id } = request.params;
         const userId = request.auth.credentials.id;
 
-        const playlistDetails = await getPlaylistDetails(id);        
+        const playlistDetails = await getPlaylistDetails(id);
         if (!playlistDetails) {
             return errorResponse(h, messages.PLAYLIST_NOT_FOUND, status_code.NOT_FOUND);
         }
 
-        if (playlistDetails.owner !== userId) {
+        const isOwner = playlistDetails.owner === userId;
+        const isCollaborator = playlistDetails.collaborators.includes(userId);
+
+        if (!isOwner && !isCollaborator) {
             return errorResponse(h, messages.NO_ACCESS, status_code.FORBIDDEN);
         }
 
@@ -163,7 +168,7 @@ const getPlaylistActivitiesHandler = async (request, h) => {
         
         const modifiedActivities = activities.map(activity => ({
             username: activity.username,
-            songTitle: activity.title,
+            title: activity.title,
             action: activity.action,
             time: activity.time
         }));

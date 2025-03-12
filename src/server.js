@@ -8,6 +8,7 @@ const authenticationRoutes = require('./api/authentications/routes');
 const userRoutes = require('./api/users/routes');
 const playlistRoutes = require('./api/playlists/routes');
 const collaborationRoutes = require('./api/collaborations/routes');
+const Inert = require('@hapi/inert');
 
 const init = async () => {
   const server = Hapi.server({
@@ -23,6 +24,9 @@ const init = async () => {
   await server.register([
     {
       plugin: Jwt
+    },
+    {
+      plugin: Inert
     }
   ]);
 

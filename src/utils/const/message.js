@@ -25,6 +25,7 @@ const messages = {
     ALBUM_DELETED: 'Album berhasil dihapus',
     ALBUM_FAILED_TO_ADD: 'Gagal menambahkan album',
     ALBUM_FAILED_TO_UPDATE: 'Gagal memperbarui album',
+    ALBUM_COVER_REQUIRED: 'Cover album harus diisi',
 
     ACTIVITIES_ADD: 'add',
     ACTIVITIES_DELETE: 'delete',

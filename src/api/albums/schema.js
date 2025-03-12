@@ -9,4 +9,10 @@ const albumIdSchema = Joi.object({
   id: Joi.string().required()
 });
 
-module.exports = { albumPayloadSchema, albumIdSchema };
+const albumCoverPayloadSchema = Joi.object({
+  headers: Joi.object({
+    'content-type': Joi.string().valid('image/jpeg', 'image/png').required()
+  }).unknown()
+});
+
+module.exports = { albumPayloadSchema, albumIdSchema, albumCoverPayloadSchema };

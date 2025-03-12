@@ -1,6 +1,7 @@
 const pool = require('../../database/postgres');
 const messages = require('../../utils/const/message');
 const status_code = require('../../utils/const/status_code');
+const { getAlbumById } = require('../../database/services/AlbumServices');
 const { successResponse, errorResponse, putDeleteResponse } = require('../../utils/response');
 
 const postAlbumHandler = async (request, h) => {
@@ -76,4 +77,86 @@ const deleteAlbumByIdHandler = async (request, h) => {
     }
 };
 
-module.exports = { postAlbumHandler, getAlbumByIdHandler, putAlbumByIdHandler, deleteAlbumByIdHandler };
+const postAlbumCoverHandler = async (request, h) => {
+    try {
+        const { id } = request.params;
+        const { file } = request.payload.cover;
+        const album = await getAlbumById(id);
+
+        if (!album) {
+            return errorResponse(h, messages.ALBUM_NOT_FOUND, status_code.NOT_FOUND);
+        }
+
+        if (!file) {
+            return errorResponse(h, messages.ALBUM_COVER_REQUIRED, status_code.BAD_REQUEST);
+        }
+
+        if (process.env.USE_AWS_S3){
+
+        } else {
+            
+        }
+
+        // const result = await pool.query(
+        //     'UPDATE albums SET picture = $1 WHERE id = $2 RETURNING id',
+        //     [file.hapi.filename, id]
+        // );
+
+        // if (!result.rows.length) {
+        //     return errorResponse(h, messages.ALBUM_FAILED_TO_UPDATE, status_code.NOT_FOUND);
+        // }
+
+        // return putDeleteResponse(h, messages.ALBUM_UPDATED, status_code.SUCCESS);
+    } catch (error) {
+        return errorResponse(h, error.message, status_code.ERROR);
+    }
+};
+
+const postLikeAlbumHandler = async (request, h) => {
+    try {
+        const { id } = request.params;
+        const userId = request.auth.credentials.id;
+
+        await pool.query(
+            'INSERT INTO likes (album_id, user_id) VALUES ($1, $2)',
+            [id, userId]
+        );
+
+        return successResponse(h, { albumId: id }, status_code.CREATED);
+    } catch (error) {
+        return errorResponse(h, error.message, status_code.ERROR);
+    }
+};
+
+const deleteLikeAlbumHandler = async (request, h) => {
+    try {
+        const { id } = request.params;
+        const userId = request.auth.credentials.id;
+
+        const result = await pool.query(
+            'DELETE FROM likes WHERE album_id = $1 AND user_id = $2 RETURNING id',
+            [id, userId]
+        );
+
+        if (!result.rows.length) {
+            return errorResponse(h, messages.ALBUM_FAILED_TO_UPDATE, status_code.NOT_FOUND);
+        }
+
+        return putDeleteResponse(h, messages.ALBUM_UPDATED, status_code.SUCCESS);
+    } catch (error) {
+        return errorResponse(h, error.message, status_code.ERROR);
+    }
+};
+
+const getLikeAlbumHandler = async (request, h) => {
+    try {
+        const { id } = request.params;
+        const result = await pool.query('SELECT * FROM likes WHERE album_id = $1', [id]);
+
+        return successResponse(h, { likes: result.rows });
+    } catch (error) {
+        return errorResponse(h, error.message, status_code.ERROR);
+    }
+};
+
+module.exports = { postAlbumHandler, getAlbumByIdHandler, putAlbumByIdHandler, deleteAlbumByIdHandler, postAlbumCoverHandler, postLikeAlbumHandler, deleteLikeAlbumHandler, getLikeAlbumHandler };

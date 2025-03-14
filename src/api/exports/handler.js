@@ -1,3 +1,9 @@
+const { errorResponse, successResponse, putDeleteResponse } = require('../../utils/response');
+const { getPlaylistById, getSongsFromPlaylist } = require('../../database/services/PlaylistServices');
+const messages = require('../../utils/const/message');
+const status_code = require('../../utils/const/status_code');
+const { sendMessage } = require('../../database/services/ProducerServices');
+
 const postExportPlaylistHandler = async (request, h) => {
     try {
         const { id } = request.params;
@@ -13,16 +19,27 @@ const postExportPlaylistHandler = async (request, h) => {
             return errorResponse(h, messages.NO_ACCESS, status_code.FORBIDDEN);
         }
 
-        // const exportPlaylist = await createExportPlaylist(id, targetEmail);
+        const songs = await getSongsFromPlaylist(playlist.id);
 
-        // get playlist songs
+        const message = JSON.stringify({
+            playlist: {
+                id: playlist.id,
+                name: playlist.name,
+                songs: songs.map(song => ({
+                    id: song.id,
+                    title: song.title,
+                    performer: song.performer
+                }))
+            },
+            targetEmail
+        });
 
-        // prepare message for rabbitmq
+        await sendMessage('export:playlist', message);
 
-        // send message to rabbitmq
-
-        return successResponse(h, { exportId: exportPlaylist.id }, status_code.CREATED);
+        return putDeleteResponse(h, messages.EXPORT_PLAYLIST_SUCCESS, status_code.CREATED);
     } catch (error) {
         return errorResponse(h, error.message, status_code.ERROR);
     }
-}
+};
+
+module.exports = { postExportPlaylistHandler };

@@ -9,6 +9,7 @@ const userRoutes = require('./api/users/routes');
 const playlistRoutes = require('./api/playlists/routes');
 const collaborationRoutes = require('./api/collaborations/routes');
 const Inert = require('@hapi/inert');
+const exportRoute = require('./api/exports/routes');
 
 const init = async () => {
   const server = Hapi.server({
@@ -52,7 +53,7 @@ const init = async () => {
 
   server.auth.default('openmusic_jwt');
 
-  server.route([...albumRoutes, ...songRoutes, ...userRoutes, ...playlistRoutes, ...authenticationRoutes, ...collaborationRoutes]);
+  server.route([...albumRoutes, ...songRoutes, ...userRoutes, ...playlistRoutes, ...authenticationRoutes, ...collaborationRoutes, ...exportRoute]);
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;

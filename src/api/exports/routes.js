@@ -4,7 +4,7 @@ const { postExportPlaylistHandler } = require("./handler");
 const exportRoute = [
     {
         method: 'POST',
-        path: '/exports/playlists/{id}',
+        path: '/export/playlists/{id}',
         handler: postExportPlaylistHandler,
         options: {
             validate: {

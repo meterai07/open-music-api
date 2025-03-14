@@ -31,7 +31,9 @@ const messages = {
     ACTIVITIES_DELETE: 'delete',
 
     COLLABORATION_NOT_FOUND: 'Kolaborasi tidak ditemukan',
-    COLLABORATION_DELETED: 'Kolaborasi berhasil dihapus'
+    COLLABORATION_DELETED: 'Kolaborasi berhasil dihapus',
+
+    EXPORT_PLAYLIST_SUCCESS: 'Playlist berhasil diexport',
 };
 
 module.exports = messages;

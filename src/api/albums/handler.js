@@ -3,6 +3,7 @@ const messages = require('../../utils/const/message');
 const status_code = require('../../utils/const/status_code');
 const { getAlbumById } = require('../../database/services/AlbumServices');
 const { successResponse, errorResponse, putDeleteResponse } = require('../../utils/response');
+const { getCache, setCache, deleteCache } = require('../../database/services/RedisServices');
 
 const postAlbumHandler = async (request, h) => {
     try {
@@ -80,7 +81,6 @@ const deleteAlbumByIdHandler = async (request, h) => {
 const postAlbumCoverHandler = async (request, h) => {
     try {
         const { id } = request.params;
-        console.log(request.payload);
         
         const { cover } = request.payload.cover;
         
@@ -136,11 +136,15 @@ const postLikeAlbumHandler = async (request, h) => {
         }
 
         const likeId = `like-${Math.random().toString(36).substring(2, 16)}`;
-
+        
         await pool.query(
             'INSERT INTO likes (id, album_id, user_id) VALUES ($1, $2, $3)',
             [likeId, id, userId]
         );
+
+        if (await getCache(id)) {
+            await deleteCache(id);
+        }
 
         return putDeleteResponse(h, messages.ALBUM_LIKED, status_code.CREATED);
     } catch (error) {
@@ -162,6 +166,10 @@ const deleteLikeAlbumHandler = async (request, h) => {
             return errorResponse(h, messages.ALBUM_FAILED_TO_UPDATE, status_code.NOT_FOUND);
         }
 
+        if (await getCache(id)) {
+            await deleteCache(id);
+        }
+
         return putDeleteResponse(h, messages.ALBUM_UPDATED, status_code.SUCCESS);
     } catch (error) {
         return errorResponse(h, error.message, status_code.ERROR);
@@ -171,9 +179,18 @@ const deleteLikeAlbumHandler = async (request, h) => {
 const getLikeAlbumHandler = async (request, h) => {
     try {
         const { id } = request.params;
-        const result = await pool.query('SELECT * FROM likes WHERE album_id = $1', [id]);
+        
+        const cachedKey = await getCache(id);
+        if (cachedKey) {
+            return successResponse(h, { likes: cachedKey }).header('X-Data-Source', 'cache');
+        }        
 
-        return successResponse(h, { likes: result.rows });
+        const result = await pool.query('SELECT COUNT(*) AS like_count FROM likes WHERE album_id = $1', [id]);
+        const likeCount = parseInt(result.rows[0].like_count, 10);
+        
+        await setCache(id, likeCount, 1800);
+
+        return successResponse(h, { likes: likeCount }).header('X-Data-Source', 'database');
     } catch (error) {
         return errorResponse(h, error.message, status_code.ERROR);
     }

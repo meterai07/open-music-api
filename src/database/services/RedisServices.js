@@ -9,12 +9,38 @@ client.on('error', (error) => {
     console.error(error);
 });
 
-client.on('ready', () => {
-    console.log('Redis ready');
-});
+(async () => {
+    await client.connect();
+})();
 
-client.on('connect', () => {
-    console.log('Redis connected');
-});
+// const getCache = async (key) => {
+//     const result = await client.get(key);
+//     return result;
+// };
 
-module.exports = { client };
+// const setCache = async (key, value, expirationInSec = 1800) => {
+//     await client.set(key, value, {
+//         EX: expirationInSec,
+//     });
+// };
+
+const setCache = async (key, value, expirationInSec = 1800) => {
+    await client.set(key, JSON.stringify(value), {
+        EX: expirationInSec,
+    });
+};
+
+const getCache = async (key) => {
+    const result = await client.get(key);
+    return result ? JSON.parse(result) : null;
+};
+
+const deleteCache = async (key) => {
+    await client.del(key);
+};
+
+module.exports = {
+    getCache,
+    setCache,
+    deleteCache,
+};

@@ -2,13 +2,13 @@ require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const Inert = require('@hapi/inert');
 const albumRoutes = require('./api/albums/routes');
 const songRoutes = require('./api/songs/routes');
 const authenticationRoutes = require('./api/authentications/routes');
 const userRoutes = require('./api/users/routes');
 const playlistRoutes = require('./api/playlists/routes');
 const collaborationRoutes = require('./api/collaborations/routes');
-const Inert = require('@hapi/inert');
 const exportRoute = require('./api/exports/routes');
 
 const init = async () => {
@@ -24,11 +24,11 @@ const init = async () => {
 
   await server.register([
     {
-      plugin: Jwt
+      plugin: Jwt,
     },
     {
-      plugin: Inert
-    }
+      plugin: Inert,
+    },
   ]);
 
   server.auth.strategy('openmusic_jwt', 'jwt', {
@@ -41,14 +41,12 @@ const init = async () => {
       exp: true,
       maxAgeSec: 14400,
     },
-    validate: async (artifacts) => {
-      return {
-        isValid: true,
-        credentials: {
-          id: artifacts.decoded.payload.id,
-        },
-      };
-    },
+    validate: async (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id,
+      },
+    }),
   });
 
   server.auth.default('openmusic_jwt');
@@ -58,7 +56,7 @@ const init = async () => {
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
     if (response.isBoom) {
-      const statusCode = response.output.statusCode;
+      const { statusCode } = response.output;
       const status = [400, 402, 403, 404].includes(statusCode) ? 'fail' : 'error';
       return h.response({
         status,

@@ -2,11 +2,11 @@ const Joi = require('joi');
 
 const albumPayloadSchema = Joi.object({
   name: Joi.string().required(),
-  year: Joi.number().required()
+  year: Joi.number().required(),
 });
 
 const albumIdSchema = Joi.object({
-  id: Joi.string().required()
+  id: Joi.string().required(),
 });
 
 // const albumCoverPayloadSchema = Joi.object({
@@ -16,7 +16,7 @@ const albumIdSchema = Joi.object({
 // });
 
 const albumCoverPayloadSchema = Joi.object({
-  'content-type': Joi.string().valid('image/jpeg', 'image/png', 'image/jpg').required()
+  'content-type': Joi.string().valid('image/jpeg', 'image/png', 'image/jpg').required(),
 }).unknown();
 
 // const albumCoverPayloadSchema = Joi.object({

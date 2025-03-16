@@ -80,21 +80,24 @@ const deleteAlbumByIdHandler = async (request, h) => {
 const postAlbumCoverHandler = async (request, h) => {
     try {
         const { id } = request.params;
-        const { file } = request.payload.cover;
+        console.log(request.payload);
+        
+        const { cover } = request.payload.cover;
+        
         const album = await getAlbumById(id);
 
         if (!album) {
             return errorResponse(h, messages.ALBUM_NOT_FOUND, status_code.NOT_FOUND);
         }
 
-        if (!file) {
+        if (!cover) {
             return errorResponse(h, messages.ALBUM_COVER_REQUIRED, status_code.BAD_REQUEST);
         }
 
         if (process.env.USE_AWS_S3){
 
         } else {
-            
+
         }
 
         // const result = await pool.query(
@@ -117,12 +120,29 @@ const postLikeAlbumHandler = async (request, h) => {
         const { id } = request.params;
         const userId = request.auth.credentials.id;
 
-        await pool.query(
-            'INSERT INTO likes (album_id, user_id) VALUES ($1, $2)',
+        const albumResult = await pool.query('SELECT * FROM albums WHERE id = $1', [id]);
+
+        if (!albumResult.rows.length) {
+            return errorResponse(h, messages.ALBUM_NOT_FOUND, status_code.NOT_FOUND);
+        }
+
+        const likeResult = await pool.query(
+            'SELECT * FROM likes WHERE album_id = $1 AND user_id = $2',
             [id, userId]
         );
 
-        return successResponse(h, { albumId: id }, status_code.CREATED);
+        if (likeResult.rows.length) {
+            return errorResponse(h, messages.ALBUM_ALREADY_LIKED, status_code.BAD_REQUEST);
+        }
+
+        const likeId = `like-${Math.random().toString(36).substring(2, 16)}`;
+
+        await pool.query(
+            'INSERT INTO likes (id, album_id, user_id) VALUES ($1, $2, $3)',
+            [likeId, id, userId]
+        );
+
+        return putDeleteResponse(h, messages.ALBUM_LIKED, status_code.CREATED);
     } catch (error) {
         return errorResponse(h, error.message, status_code.ERROR);
     }

@@ -1,5 +1,5 @@
 const { postAlbumHandler, getAlbumByIdHandler, putAlbumByIdHandler, deleteAlbumByIdHandler, postAlbumCoverHandler, postLikeAlbumHandler, deleteLikeAlbumHandler, getLikeAlbumHandler } = require('./handler');
-const { albumPayloadSchema, albumIdSchema, albumCoverPayloadSchema } = require('./schema');
+const { albumPayloadSchema, albumIdSchema } = require('./schema');
 
 const albumRoutes = [
     {
@@ -54,7 +54,12 @@ const albumRoutes = [
         options: {
             validate: {
                 params: albumIdSchema,
-                payload: albumCoverPayloadSchema
+            },
+            payload: {
+                allow: 'multipart/form-data',
+                maxBytes: 512000,
+                multipart: true,
+                output: 'stream',
             },
             auth: false
         }
@@ -67,6 +72,7 @@ const albumRoutes = [
             validate: {
                 params: albumIdSchema
             },
+            auth: 'openmusic_jwt'
         }
     },
     {
@@ -77,6 +83,7 @@ const albumRoutes = [
             validate: {
                 params: albumIdSchema
             },
+            auth: 'openmusic_jwt'
         }
     },
     {
@@ -87,6 +94,7 @@ const albumRoutes = [
             validate: {
                 params: albumIdSchema
             },
+            auth: false
         }
     }
 ]

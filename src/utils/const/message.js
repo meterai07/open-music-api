@@ -26,6 +26,9 @@ const messages = {
     ALBUM_FAILED_TO_ADD: 'Gagal menambahkan album',
     ALBUM_FAILED_TO_UPDATE: 'Gagal memperbarui album',
     ALBUM_COVER_REQUIRED: 'Cover album harus diisi',
+    ALBUM_ALREADY_LIKED: 'Album sudah pernah dilike',
+    ALBUM_LIKED: 'Album berhasil dilike',
+    ALBUM_UNLIKED: 'Album berhasil diunlike',
 
     ACTIVITIES_ADD: 'add',
     ACTIVITIES_DELETE: 'delete',

@@ -106,12 +106,11 @@ const postAlbumCoverHandler = async (request, h) => {
       return errorResponse(h, messages.INVALID_FILE_TYPE, status_code.BAD_REQUEST);
     }
 
-    
     const uploadDir = path.join(__dirname, '../uploads/pictures');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
-    
+
     if (album.cover_url) {
       const oldCoverPath = path.join(__dirname, '../uploads/pictures', path.basename(album.cover_url));
       if (fs.existsSync(oldCoverPath)) {

@@ -10,6 +10,7 @@ const userRoutes = require('./api/users/routes');
 const playlistRoutes = require('./api/playlists/routes');
 const collaborationRoutes = require('./api/collaborations/routes');
 const exportRoute = require('./api/exports/routes');
+const uploadRoutes = require('./api/uploads/routes');
 
 const init = async () => {
   const server = Hapi.server({
@@ -60,6 +61,7 @@ const init = async () => {
       ...authenticationRoutes,
       ...collaborationRoutes,
       ...exportRoute,
+      ...uploadRoutes
     ],
   );
 

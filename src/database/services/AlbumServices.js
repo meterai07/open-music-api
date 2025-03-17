@@ -32,5 +32,8 @@ const DeleteAlbumById = async (id) => {
 };
 
 module.exports = {
-  PostAlbum, GetAlbumById, PutAlbumById, DeleteAlbumById,
+  PostAlbum,
+  GetAlbumById,
+  PutAlbumById,
+  DeleteAlbumById,
 };

@@ -2,6 +2,7 @@ const messages = {
   NO_ACCESS: 'Anda tidak memiliki akses',
   INTERNAL_SERVER_ERROR: 'Maaf, terjadi kegagalan pada server kami',
   INCORRECT_CREDENTIAL: 'Kredensial yang Anda masukkan salah',
+  INVALID_FILE_TYPE: 'Tipe file tidak valid',
 
   REFRESH_TOKEN_INVALID: 'Refresh token tidak valid',
   REFERESH_TOKEN_DELETED: 'Refresh token berhasil dihapus',
@@ -29,6 +30,8 @@ const messages = {
   ALBUM_ALREADY_LIKED: 'Album sudah pernah dilike',
   ALBUM_LIKED: 'Album berhasil dilike',
   ALBUM_UNLIKED: 'Album berhasil diunlike',
+  ALBUM_COVER_UPLOADED: 'Cover album berhasil diunggah',
+  ALBUM_COVER_NULL: 'Album tidak memiliki cover',
 
   ACTIVITIES_ADD: 'add',
   ACTIVITIES_DELETE: 'delete',

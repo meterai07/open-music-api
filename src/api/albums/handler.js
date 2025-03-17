@@ -1,7 +1,9 @@
+const fs = require('fs');
+const path = require('path');
 const pool = require('../../database/postgres');
 const messages = require('../../utils/const/message');
 const status_code = require('../../utils/const/status_code');
-const { getAlbumById } = require('../../database/services/AlbumServices');
+const { GetAlbumById } = require('../../database/services/AlbumServices');
 const { successResponse, errorResponse, putDeleteResponse } = require('../../utils/response');
 const { getCache, setCache, deleteCache } = require('../../database/services/RedisServices');
 
@@ -30,13 +32,19 @@ const getAlbumByIdHandler = async (request, h) => {
       return errorResponse(h, messages.ALBUM_NOT_FOUND, status_code.NOT_FOUND);
     }
 
-    const songsResult = await pool.query('SELECT * FROM songs WHERE album_id = $1', [id]);
+    const songsResult = await pool.query('SELECT id, title, performer FROM songs WHERE album_id = $1', [id]);
+
+    const album = albumResult.rows[0];
+    const formattedAlbum = {
+      id: album.id,
+      name: album.name,
+      year: album.year,
+      coverUrl: album.cover_url || null,
+      songs: songsResult.rows,
+    };
 
     return successResponse(h, {
-      album: {
-        ...albumResult.rows[0],
-        songs: songsResult.rows,
-      },
+      album: formattedAlbum,
     });
   } catch (error) {
     return errorResponse(h, error.message, status_code.ERROR);
@@ -81,11 +89,9 @@ const deleteAlbumByIdHandler = async (request, h) => {
 const postAlbumCoverHandler = async (request, h) => {
   try {
     const { id } = request.params;
-    console.log(`id: ${id}`);
-
     const { cover } = request.payload;
 
-    const album = await getAlbumById(id);
+    const album = await GetAlbumById(id);
 
     if (!album) {
       return errorResponse(h, messages.ALBUM_NOT_FOUND, status_code.NOT_FOUND);
@@ -95,22 +101,41 @@ const postAlbumCoverHandler = async (request, h) => {
       return errorResponse(h, messages.ALBUM_COVER_REQUIRED, status_code.BAD_REQUEST);
     }
 
-    if (process.env.USE_AWS_S3) {
-
-    } else {
-
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedMimeTypes.includes(cover.hapi.headers['content-type'])) {
+      return errorResponse(h, messages.INVALID_FILE_TYPE, status_code.BAD_REQUEST);
     }
 
-    // const result = await pool.query(
-    //     'UPDATE albums SET picture = $1 WHERE id = $2 RETURNING id',
-    //     [file.hapi.filename, id]
-    // );
+    
+    const uploadDir = path.join(__dirname, '../uploads/pictures');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    
+    if (album.cover_url) {
+      const oldCoverPath = path.join(__dirname, '../uploads/pictures', path.basename(album.cover_url));
+      if (fs.existsSync(oldCoverPath)) {
+        fs.unlinkSync(oldCoverPath);
+      }
+    }
 
-    // if (!result.rows.length) {
-    //     return errorResponse(h, messages.ALBUM_FAILED_TO_UPDATE, status_code.NOT_FOUND);
-    // }
+    const filename = `${id}_${Date.now()}_${cover.hapi.filename}`;
+    const filePath = path.join(uploadDir, filename);
 
-    // return putDeleteResponse(h, messages.ALBUM_UPDATED, status_code.SUCCESS);
+    const fileStream = fs.createWriteStream(filePath);
+    await new Promise((resolve, reject) => {
+      cover.pipe(fileStream);
+      cover.on('end', resolve);
+      cover.on('error', reject);
+    });
+
+    const host = process.env.HOST || 'localhost';
+    const port = process.env.PORT || 5000;
+    const coverUrl = `http://${host}:${port}/uploads/pictures/${filename}`;
+
+    await pool.query('UPDATE albums SET cover_url = $1 WHERE id = $2', [coverUrl, id]);
+
+    return putDeleteResponse(h, messages.ALBUM_COVER_UPLOADED, status_code.CREATED);
   } catch (error) {
     return errorResponse(h, error.message, status_code.ERROR);
   }

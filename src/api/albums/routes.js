@@ -69,6 +69,7 @@ const albumRoutes = [
         maxBytes: 512000,
         output: 'stream',
         parse: true,
+        multipart: true,
       },
       auth: false,
     },

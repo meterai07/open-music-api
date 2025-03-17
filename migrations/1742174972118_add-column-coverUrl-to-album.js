@@ -9,23 +9,10 @@ exports.shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
-    pgm.createTable('likes', {
-        id: {
-            type: 'VARCHAR(50)',
-            primaryKey: true
+    pgm.addColumn('albums', {
+        cover_url: {
+            type: 'TEXT',
         },
-        user_id: {
-            type: 'VARCHAR(50)',
-            notNull: true,
-            references: 'users(id)',
-            onDelete: 'CASCADE'
-        }, 
-        album_id: {
-            type: 'VARCHAR(50)',
-            notNull: true,
-            references: 'albums(id)',
-            onDelete: 'CASCADE'
-        }
     });
 };
 
@@ -35,5 +22,5 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-    pgm.dropTable('likes');
+    pgm.dropColumn('albums', 'cover_url');
 };

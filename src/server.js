@@ -61,7 +61,7 @@ const init = async () => {
       ...authenticationRoutes,
       ...collaborationRoutes,
       ...exportRoute,
-      ...uploadRoutes
+      ...uploadRoutes,
     ],
   );
 

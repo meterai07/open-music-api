@@ -1,6 +1,6 @@
 const pool = require('../../database/postgres');
 const messages = require('../../utils/const/message');
-const status_code = require('../../utils/const/status_code');
+const statusCode = require('../../utils/const/statusCode');
 const { successResponse, errorResponse, putDeleteResponse } = require('../../utils/response');
 
 const postSongHandler = async (request, h) => {
@@ -17,12 +17,12 @@ const postSongHandler = async (request, h) => {
       [id, title, year, genre, performer, duration, albumId],
     );
 
-    return successResponse(h, { songId: id }, status_code.CREATED);
+    return successResponse(h, { songId: id }, statusCode.CREATED);
   } catch (error) {
     if (error.code === '23503') {
-      return errorResponse(h, messages.ALBUM_NOT_FOUND, status_code.NOT_FOUND);
+      return errorResponse(h, messages.ALBUM_NOT_FOUND, statusCode.NOT_FOUND);
     }
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 
@@ -50,7 +50,7 @@ const getSongsHandler = async (request, h) => {
     const result = await pool.query(query, values);
     return successResponse(h, { songs: result.rows });
   } catch (error) {
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 
@@ -64,12 +64,12 @@ const getSongByIdHandler = async (request, h) => {
     );
 
     if (!result.rows.length) {
-      return errorResponse(h, messages.SONG_NOT_FOUND, status_code.NOT_FOUND);
+      return errorResponse(h, messages.SONG_NOT_FOUND, statusCode.NOT_FOUND);
     }
 
     return successResponse(h, { song: result.rows[0] });
   } catch (error) {
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 
@@ -89,15 +89,15 @@ const putSongByIdHandler = async (request, h) => {
     );
 
     if (!result.rows.length) {
-      return errorResponse(h, messages.SONG_FAILED_TO_UPDATE, status_code.NOT_FOUND);
+      return errorResponse(h, messages.SONG_FAILED_TO_UPDATE, statusCode.NOT_FOUND);
     }
 
-    return putDeleteResponse(h, messages.SONG_UPDATED, status_code.SUCCESS);
+    return putDeleteResponse(h, messages.SONG_UPDATED, statusCode.SUCCESS);
   } catch (error) {
     if (error.code === '23503') {
-      return errorResponse(h, messages.ALBUM_NOT_FOUND, status_code.NOT_FOUND);
+      return errorResponse(h, messages.ALBUM_NOT_FOUND, statusCode.NOT_FOUND);
     }
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 
@@ -107,12 +107,12 @@ const deleteSongByIdHandler = async (request, h) => {
     const result = await pool.query('DELETE FROM songs WHERE id = $1 RETURNING id', [id]);
 
     if (!result.rows.length) {
-      return errorResponse(h, messages.SONG_FAILED_TO_UPDATE, status_code.NOT_FOUND);
+      return errorResponse(h, messages.SONG_FAILED_TO_UPDATE, statusCode.NOT_FOUND);
     }
 
-    return putDeleteResponse(h, messages.SONG_DELETED, status_code.SUCCESS);
+    return putDeleteResponse(h, messages.SONG_DELETED, statusCode.SUCCESS);
   } catch (error) {
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 

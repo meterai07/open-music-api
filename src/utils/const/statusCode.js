@@ -1,4 +1,4 @@
-const status_code = {
+const statusCode = {
   SUCCESS: 200,
   CREATED: 201,
   BAD_REQUEST: 400,
@@ -8,4 +8,4 @@ const status_code = {
   ERROR: 500,
 };
 
-module.exports = status_code;
+module.exports = statusCode;

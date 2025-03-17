@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const pool = require('../../database/postgres');
 const messages = require('../../utils/const/message');
-const status_code = require('../../utils/const/status_code');
+const statusCode = require('../../utils/const/statusCode');
 const { GetAlbumById } = require('../../database/services/AlbumServices');
 const { successResponse, errorResponse, putDeleteResponse } = require('../../utils/response');
 const { getCache, setCache, deleteCache } = require('../../database/services/RedisServices');
@@ -17,9 +17,9 @@ const postAlbumHandler = async (request, h) => {
       [id, name, year],
     );
 
-    return successResponse(h, { albumId: id }, status_code.CREATED);
+    return successResponse(h, { albumId: id }, statusCode.CREATED);
   } catch (error) {
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 
@@ -29,7 +29,7 @@ const getAlbumByIdHandler = async (request, h) => {
     const albumResult = await pool.query('SELECT * FROM albums WHERE id = $1', [id]);
 
     if (!albumResult.rows.length) {
-      return errorResponse(h, messages.ALBUM_NOT_FOUND, status_code.NOT_FOUND);
+      return errorResponse(h, messages.ALBUM_NOT_FOUND, statusCode.NOT_FOUND);
     }
 
     const songsResult = await pool.query('SELECT id, title, performer FROM songs WHERE album_id = $1', [id]);
@@ -47,7 +47,7 @@ const getAlbumByIdHandler = async (request, h) => {
       album: formattedAlbum,
     });
   } catch (error) {
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 
@@ -62,12 +62,12 @@ const putAlbumByIdHandler = async (request, h) => {
     );
 
     if (!result.rows.length) {
-      return errorResponse(h, messages.ALBUM_FAILED_TO_UPDATE, status_code.NOT_FOUND);
+      return errorResponse(h, messages.ALBUM_FAILED_TO_UPDATE, statusCode.NOT_FOUND);
     }
 
-    return putDeleteResponse(h, messages.ALBUM_UPDATED, status_code.SUCCESS);
+    return putDeleteResponse(h, messages.ALBUM_UPDATED, statusCode.SUCCESS);
   } catch (error) {
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 
@@ -77,12 +77,12 @@ const deleteAlbumByIdHandler = async (request, h) => {
     const result = await pool.query('DELETE FROM albums WHERE id = $1 RETURNING id', [id]);
 
     if (!result.rows.length) {
-      return errorResponse(h, messages.ALBUM_FAILED_TO_UPDATE, status_code.NOT_FOUND);
+      return errorResponse(h, messages.ALBUM_FAILED_TO_UPDATE, statusCode.NOT_FOUND);
     }
 
-    return putDeleteResponse(h, messages.ACTIVITIES_DELETE, status_code.SUCCESS);
+    return putDeleteResponse(h, messages.ACTIVITIES_DELETE, statusCode.SUCCESS);
   } catch (error) {
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 
@@ -94,16 +94,16 @@ const postAlbumCoverHandler = async (request, h) => {
     const album = await GetAlbumById(id);
 
     if (!album) {
-      return errorResponse(h, messages.ALBUM_NOT_FOUND, status_code.NOT_FOUND);
+      return errorResponse(h, messages.ALBUM_NOT_FOUND, statusCode.NOT_FOUND);
     }
 
     if (!cover) {
-      return errorResponse(h, messages.ALBUM_COVER_REQUIRED, status_code.BAD_REQUEST);
+      return errorResponse(h, messages.ALBUM_COVER_REQUIRED, statusCode.BAD_REQUEST);
     }
 
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
     if (!allowedMimeTypes.includes(cover.hapi.headers['content-type'])) {
-      return errorResponse(h, messages.INVALID_FILE_TYPE, status_code.BAD_REQUEST);
+      return errorResponse(h, messages.INVALID_FILE_TYPE, statusCode.BAD_REQUEST);
     }
 
     const uploadDir = path.join(__dirname, '../uploads/pictures');
@@ -134,9 +134,9 @@ const postAlbumCoverHandler = async (request, h) => {
 
     await pool.query('UPDATE albums SET cover_url = $1 WHERE id = $2', [coverUrl, id]);
 
-    return putDeleteResponse(h, messages.ALBUM_COVER_UPLOADED, status_code.CREATED);
+    return putDeleteResponse(h, messages.ALBUM_COVER_UPLOADED, statusCode.CREATED);
   } catch (error) {
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 
@@ -148,7 +148,7 @@ const postLikeAlbumHandler = async (request, h) => {
     const albumResult = await pool.query('SELECT * FROM albums WHERE id = $1', [id]);
 
     if (!albumResult.rows.length) {
-      return errorResponse(h, messages.ALBUM_NOT_FOUND, status_code.NOT_FOUND);
+      return errorResponse(h, messages.ALBUM_NOT_FOUND, statusCode.NOT_FOUND);
     }
 
     const likeResult = await pool.query(
@@ -157,7 +157,7 @@ const postLikeAlbumHandler = async (request, h) => {
     );
 
     if (likeResult.rows.length) {
-      return errorResponse(h, messages.ALBUM_ALREADY_LIKED, status_code.BAD_REQUEST);
+      return errorResponse(h, messages.ALBUM_ALREADY_LIKED, statusCode.BAD_REQUEST);
     }
 
     const likeId = `like-${Math.random().toString(36).substring(2, 16)}`;
@@ -169,9 +169,9 @@ const postLikeAlbumHandler = async (request, h) => {
 
     await deleteCache(id);
 
-    return putDeleteResponse(h, messages.ALBUM_LIKED, status_code.CREATED);
+    return putDeleteResponse(h, messages.ALBUM_LIKED, statusCode.CREATED);
   } catch (error) {
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 
@@ -186,14 +186,14 @@ const deleteLikeAlbumHandler = async (request, h) => {
     );
 
     if (!result.rows.length) {
-      return errorResponse(h, messages.ALBUM_FAILED_TO_UPDATE, status_code.NOT_FOUND);
+      return errorResponse(h, messages.ALBUM_FAILED_TO_UPDATE, statusCode.NOT_FOUND);
     }
 
     await deleteCache(id);
 
-    return putDeleteResponse(h, messages.ALBUM_UPDATED, status_code.SUCCESS);
+    return putDeleteResponse(h, messages.ALBUM_UPDATED, statusCode.SUCCESS);
   } catch (error) {
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 
@@ -213,7 +213,7 @@ const getLikeAlbumHandler = async (request, h) => {
 
     return successResponse(h, { likes: likeCount }).header('X-Data-Source', 'database');
   } catch (error) {
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 

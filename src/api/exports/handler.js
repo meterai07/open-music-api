@@ -1,7 +1,7 @@
 const { errorResponse, putDeleteResponse } = require('../../utils/response');
 const { getPlaylistById, getSongsFromPlaylist } = require('../../database/services/PlaylistServices');
 const messages = require('../../utils/const/message');
-const status_code = require('../../utils/const/status_code');
+const statusCode = require('../../utils/const/statusCode');
 const { sendMessage } = require('../../database/services/ProducerServices');
 
 const postExportPlaylistHandler = async (request, h) => {
@@ -12,11 +12,11 @@ const postExportPlaylistHandler = async (request, h) => {
 
     const playlist = await getPlaylistById(id);
     if (!playlist) {
-      return errorResponse(h, messages.PLAYLIST_NOT_FOUND, status_code.NOT_FOUND);
+      return errorResponse(h, messages.PLAYLIST_NOT_FOUND, statusCode.NOT_FOUND);
     }
 
     if (playlist.owner !== userId) {
-      return errorResponse(h, messages.NO_ACCESS, status_code.FORBIDDEN);
+      return errorResponse(h, messages.NO_ACCESS, statusCode.FORBIDDEN);
     }
 
     const songs = await getSongsFromPlaylist(playlist.id);
@@ -36,9 +36,9 @@ const postExportPlaylistHandler = async (request, h) => {
 
     await sendMessage('export:playlist', message);
 
-    return putDeleteResponse(h, messages.EXPORT_PLAYLIST_SUCCESS, status_code.CREATED);
+    return putDeleteResponse(h, messages.EXPORT_PLAYLIST_SUCCESS, statusCode.CREATED);
   } catch (error) {
-    return errorResponse(h, error.message, status_code.ERROR);
+    return errorResponse(h, error.message, statusCode.ERROR);
   }
 };
 

@@ -1,12 +1,12 @@
 const { nanoid } = require('nanoid');
 const pool = require('../postgres');
 
-const addCollaboration = async (playlistId, owner_id, collaborator_id) => {
+const addCollaboration = async (playlistId, ownerId, collaborationId) => {
   const id = `collab-${nanoid(16)}`;
 
   const query = {
     text: 'INSERT INTO collaborations(id, playlist_id, owner_id, collaborator_id) VALUES($1, $2, $3, $4) RETURNING id',
-    values: [id, playlistId, owner_id, collaborator_id],
+    values: [id, playlistId, ownerId, collaborationId],
   };
 
   const result = await pool.query(query);

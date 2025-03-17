@@ -1,13 +1,13 @@
 const pool = require('../postgres');
 
 const addRefreshToken = async (payload) => {
-  const { token, user_id } = payload;
+  const { token, userId } = payload;
 
-  const id = `${user_id}.${Date.now()}`;
+  const id = `${userId}.${Date.now()}`;
 
   const query = {
     text: 'INSERT INTO authentications(id, token, user_id) VALUES($1, $2, $3)',
-    values: [id, token, user_id],
+    values: [id, token, userId],
   };
   await pool.query(query);
 };
@@ -37,11 +37,11 @@ const deleteRefreshToken = async (token) => {
 };
 
 const getUserRefreshTokenByUserId = async (payload) => {
-  const { user_id } = payload;
+  const { userId } = payload;
 
   const query = {
     text: 'SELECT * FROM authentications WHERE user_id = $1',
-    values: [user_id],
+    values: [userId],
   };
   const result = await pool.query(query);
 

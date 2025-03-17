@@ -4,9 +4,13 @@ const generateAccessToken = (payload) => Jwt.token.generate(payload, process.env
   ttlSec: 1800,
 });
 
-const generateRefreshToken = (payload) => Jwt.token.generate(payload, process.env.REFRESH_TOKEN_KEY, {
-  ttlSec: process.env.REFRESH_TOKEN_TTL,
-});
+const generateRefreshToken = (payload) => Jwt.token.generate(
+  payload,
+  process.env.REFRESH_TOKEN_KEY,
+  {
+    ttlSec: process.env.REFRESH_TOKEN_TTL,
+  },
+);
 
 const verifyRefreshToken = (refreshToken) => {
   const artifacts = Jwt.token.decode(refreshToken);

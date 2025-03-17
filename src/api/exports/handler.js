@@ -1,4 +1,4 @@
-const { errorResponse, successResponse, putDeleteResponse } = require('../../utils/response');
+const { errorResponse, putDeleteResponse } = require('../../utils/response');
 const { getPlaylistById, getSongsFromPlaylist } = require('../../database/services/PlaylistServices');
 const messages = require('../../utils/const/message');
 const status_code = require('../../utils/const/status_code');

@@ -36,7 +36,7 @@ const messages = {
   COLLABORATION_NOT_FOUND: 'Kolaborasi tidak ditemukan',
   COLLABORATION_DELETED: 'Kolaborasi berhasil dihapus',
 
-  EXPORT_PLAYLIST_SUCCESS: 'Playlist berhasil diexport',
+  EXPORT_PLAYLIST_SUCCESS: 'Permintaan Anda sedang kami proses',
 };
 
 module.exports = messages;

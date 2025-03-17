@@ -1,7 +1,10 @@
 const { verifyUserCredential } = require('../../database/services/UserServices');
 const { errorResponse, successResponse, putDeleteResponse } = require('../../utils/response');
 const {
-  addRefreshToken, getRefreshTokenByToken, deleteRefreshToken, getUserRefreshTokenByUserId,
+  addRefreshToken,
+  getRefreshTokenByToken,
+  deleteRefreshToken,
+  getUserRefreshTokenByUserId,
 } = require('../../database/services/AuthenticationServices');
 const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../../utils/jwt');
 const messages = require('../../utils/const/message');
@@ -71,4 +74,8 @@ const authenticationDeleteHandler = async (request, h) => {
   }
 };
 
-module.exports = { authenticationPostHandler, authenticationPutHandler, authenticationDeleteHandler };
+module.exports = {
+  authenticationPostHandler,
+  authenticationPutHandler,
+  authenticationDeleteHandler,
+};

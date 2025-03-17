@@ -1,5 +1,12 @@
 const {
-  postAlbumHandler, getAlbumByIdHandler, putAlbumByIdHandler, deleteAlbumByIdHandler, postAlbumCoverHandler, postLikeAlbumHandler, deleteLikeAlbumHandler, getLikeAlbumHandler,
+  postAlbumHandler,
+  getAlbumByIdHandler,
+  putAlbumByIdHandler,
+  deleteAlbumByIdHandler,
+  postAlbumCoverHandler,
+  postLikeAlbumHandler,
+  deleteLikeAlbumHandler,
+  getLikeAlbumHandler,
 } = require('./handler');
 const { albumPayloadSchema, albumIdSchema } = require('./schema');
 

@@ -107,5 +107,12 @@ const deleteSongFromPlaylist = async (playlistId, songId) => {
 };
 
 module.exports = {
-  addPlaylist, getPlaylists, deletePlaylistById, addSongToPlaylist, getSongsFromPlaylist, deleteSongFromPlaylist, getPlaylistDetails, getPlaylistById,
+  addPlaylist,
+  getPlaylists,
+  deletePlaylistById,
+  addSongToPlaylist,
+  getSongsFromPlaylist,
+  deleteSongFromPlaylist,
+  getPlaylistDetails,
+  getPlaylistById,
 };

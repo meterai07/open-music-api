@@ -1,5 +1,11 @@
 const {
-  postPlaylistHandler, getAllPlaylistsHandler, deletePlaylistByIdHandler, postSongToPlaylistHandler, getSongsFromPlaylistHandler, deleteSongFromPlaylistHandler, getPlaylistActivitiesHandler,
+  postPlaylistHandler,
+  getAllPlaylistsHandler,
+  deletePlaylistByIdHandler,
+  postSongToPlaylistHandler,
+  getSongsFromPlaylistHandler,
+  deleteSongFromPlaylistHandler,
+  getPlaylistActivitiesHandler,
 } = require('./handler');
 const { playlistPayloadSchema, songsPlaylistPayloadSchema } = require('./schema');
 

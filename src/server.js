@@ -51,7 +51,17 @@ const init = async () => {
 
   server.auth.default('openmusic_jwt');
 
-  server.route([...albumRoutes, ...songRoutes, ...userRoutes, ...playlistRoutes, ...authenticationRoutes, ...collaborationRoutes, ...exportRoute]);
+  server.route(
+    [
+      ...albumRoutes,
+      ...songRoutes,
+      ...userRoutes,
+      ...playlistRoutes,
+      ...authenticationRoutes,
+      ...collaborationRoutes,
+      ...exportRoute,
+    ],
+  );
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;

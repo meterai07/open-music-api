@@ -143,9 +143,7 @@ const postLikeAlbumHandler = async (request, h) => {
       [likeId, id, userId],
     );
 
-    if (await getCache(id)) {
-      await deleteCache(id);
-    }
+    await deleteCache(id);
 
     return putDeleteResponse(h, messages.ALBUM_LIKED, status_code.CREATED);
   } catch (error) {
@@ -167,9 +165,7 @@ const deleteLikeAlbumHandler = async (request, h) => {
       return errorResponse(h, messages.ALBUM_FAILED_TO_UPDATE, status_code.NOT_FOUND);
     }
 
-    if (await getCache(id)) {
-      await deleteCache(id);
-    }
+    await deleteCache(id);
 
     return putDeleteResponse(h, messages.ALBUM_UPDATED, status_code.SUCCESS);
   } catch (error) {
@@ -198,5 +194,12 @@ const getLikeAlbumHandler = async (request, h) => {
 };
 
 module.exports = {
-  postAlbumHandler, getAlbumByIdHandler, putAlbumByIdHandler, deleteAlbumByIdHandler, postAlbumCoverHandler, postLikeAlbumHandler, deleteLikeAlbumHandler, getLikeAlbumHandler,
+  postAlbumHandler,
+  getAlbumByIdHandler,
+  putAlbumByIdHandler,
+  deleteAlbumByIdHandler,
+  postAlbumCoverHandler,
+  postLikeAlbumHandler,
+  deleteLikeAlbumHandler,
+  getLikeAlbumHandler,
 };

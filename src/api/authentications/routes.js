@@ -1,4 +1,3 @@
-const { options } = require('joi');
 const { authenticationPayloadSchema, authenticationRefreshPayloadSchema } = require('./schema');
 const { authenticationPostHandler, authenticationPutHandler, authenticationDeleteHandler } = require('./handler');
 

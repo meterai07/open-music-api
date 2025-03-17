@@ -1,3 +1,6 @@
+const { nanoid } = require('nanoid');
+const pool = require('../postgres');
+
 const PostAlbum = async (album) => {
   const { name, year } = album;
   const result = await pool.query(

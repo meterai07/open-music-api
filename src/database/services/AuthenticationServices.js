@@ -22,18 +22,6 @@ const getRefreshTokenByToken = async (token) => {
   return result.rows;
 };
 
-const updateRefreshToken = async (payload) => {
-  const { token, user_id } = payload;
-
-  const query = {
-    text: 'UPDATE authentications SET token = $1 WHERE user_id = $2 RETURNING token',
-    values: [token, user_id],
-  };
-  const result = await pool.query(query);
-
-  return result.rows;
-};
-
 const deleteRefreshToken = async (token) => {
   const query = {
     text: 'DELETE FROM authentications WHERE token = $1',
